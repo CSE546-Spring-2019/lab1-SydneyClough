@@ -133,6 +133,11 @@ void printStringCount(char *searchString, FILE *inputFile) {
 void copyFile(FILE *inputFile, FILE *outputFile) {
     char *buffer = malloc(MAX_ALLOC * sizeof(char));
 
+    if (!buffer) {
+        printf("Error allocating memory. \n");
+        exit(1);
+    }
+
     int bytesRead = fread(buffer, sizeof(char), MAX_ALLOC, inputFile);
     while(bytesRead > 0) {
         /* 
