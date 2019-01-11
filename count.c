@@ -4,8 +4,9 @@ the name of an output file.
 
 The program prints to stdout the size of the file and the number of occurrences
 of the search string in the input file. The program can handle searching for
-character strings or strings of bytes. The program also copies the input file
-to a file with the output file name specified.
+character strings or strings of bytes. 
+
+This information is also printed in the output file.
 
 Author: Sydney Clough
 
@@ -21,7 +22,7 @@ Author: Sydney Clough
 #define MAX_SEARCH 20
 
 /* Prints the size of the file (in bytes) to std out */
-void printSizeOfFile(FILE *inputFile) {
+void printSizeOfFile(FILE *inputFile, FILE *outputFile) {
     /* Move to end of file. */
     fseek(inputFile, 0L, SEEK_END);
     /* Get file pointer position. */
@@ -30,6 +31,7 @@ void printSizeOfFile(FILE *inputFile) {
     fseek(inputFile, 0, SEEK_SET);
 
     printf("Size of file is %ld \n", size);
+    fprintf(outputFile, "Size of file is %ld \n", size);
 }
 
 /* Returns the number of bytes in the searchString. */
@@ -113,9 +115,7 @@ int countStringOccurrence(char *searchString, FILE *inputFile) {
 
     }
 
-    /* Return to start of file and free allocated memory. */
-    fseek(inputFile, 0, SEEK_SET); 
-
+    /* Frees allocated memory. */
     free(buffer);
     free(possiblePosition);   
     
@@ -124,32 +124,12 @@ int countStringOccurrence(char *searchString, FILE *inputFile) {
 }
 
 /* Prints the number of matches found within the input file. */
-void printStringCount(char *searchString, FILE *inputFile) {
+void printStringCount(char *searchString, FILE *inputFile, FILE *outputFile) {
     int count = countStringOccurrence(searchString, inputFile);
     printf("Number of matches = %d \n", count);
+    fprintf(outputFile, "Number of matches = %d \n", count);
 }
 
-/* Copies the input file to the output file. */
-void copyFile(FILE *inputFile, FILE *outputFile) {
-    char *buffer = malloc(MAX_ALLOC * sizeof(char));
-
-    if (!buffer) {
-        printf("Error allocating memory. \n");
-        exit(1);
-    }
-
-    int bytesRead = fread(buffer, sizeof(char), MAX_ALLOC, inputFile);
-    while(bytesRead > 0) {
-        /* 
-        bytesRead needs to be used here. Otherwise fwrite can pick up garbage 
-        during the last iteration (when the amount read is less than MAX_ALLOC bytes).
-        */
-        fwrite(buffer, sizeof(char), bytesRead, outputFile);
-        bytesRead = fread(buffer, sizeof(char), MAX_ALLOC, inputFile);
-    }
-
-    free(buffer);
-}
 
 int main (int argc, char **argv) {
     /* Checks that the correct command was entered. */
@@ -186,9 +166,8 @@ int main (int argc, char **argv) {
         }
     }
 
-    printSizeOfFile(inputFile);
-    printStringCount(argv[2], inputFile);
-    copyFile(inputFile, outputFile);
+    printSizeOfFile(inputFile, outputFile);
+    printStringCount(argv[2], inputFile, outputFile);
 
     /* Close files. */
     fclose(inputFile);
