@@ -49,7 +49,7 @@ Counts the number of times the specified search string occurs in
 the input file.
 */
     
-int countStringOccurrence(char *searchString, FILE *inputFile) {
+long countStringOccurrence(char *searchString, FILE *inputFile) {
     /* Buffer for reading in the file. */
     char *buffer = malloc(MAX_ALLOC * sizeof(char));
     int searchLength = searchStringLength(searchString);
@@ -66,7 +66,7 @@ int countStringOccurrence(char *searchString, FILE *inputFile) {
     int *possiblePosition = calloc(searchLength, sizeof(int));
 
 
-    int count = 0;
+    long count = 0;
 
     /* Exits with error message if machine is out of memory. */
     if (!buffer || !possiblePosition) {
@@ -125,9 +125,9 @@ int countStringOccurrence(char *searchString, FILE *inputFile) {
 
 /* Prints the number of matches found within the input file. */
 void printStringCount(char *searchString, FILE *inputFile, FILE *outputFile) {
-    int count = countStringOccurrence(searchString, inputFile);
-    printf("Number of matches = %d \n", count);
-    fprintf(outputFile, "Number of matches = %d \n", count);
+    long count = countStringOccurrence(searchString, inputFile);
+    printf("Number of matches = %ld \n", count);
+    fprintf(outputFile, "Number of matches = %ld \n", count);
 }
 
 
